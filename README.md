@@ -1,98 +1,88 @@
-**Banking Management System (JDBC)**
+**Retail Insights Database**
 
-   A professional console-based application designed to manage core banking operations with high reliability and data persistence. This system implements a robust Three-Tier Architecture, separating the user interface, business logic, and a MySQL data layer to ensure scalable and secure account management.
+The Retail Insights Database is a SQL-based project designed to manage and analyze retail store operations. It covers inventory tracking, category management, and sales transactions, along with analytical queries to extract meaningful business insights.
 
-**Key Features:**
+**Database Schema**
 
-Account Diversification: Implements specific business rules for Savings, Current, and Student accounts using Object-Oriented principles.
-  
-Persistent Storage: All user and transaction data is stored in a relational database, ensuring information is never lost after system shutdown.
-  
-Secure Authentication: User-specific login credentials verified directly against database records.
-  
-**Financial Operations: **
-  Deposits & Withdrawals: Updates account balances in real-time with atomic database transactions.
-    
-  Fund Transfers: Enables secure peer-to-peer transfers between accounts using unique account identifiers.
+**Products Table**
 
-    
-Automated Audit Trail: Every transaction is automatically logged into a historical ledger with precise timestamps.
+Stores details about products.
 
-
-**Technology Stack:**
-
-Language: Java (Core Java & JDBC)
-
-Database: MySQL 8.0+
-
-Driver: MySQL Connector/J
-
-Design Patterns: Abstraction, Inheritance, and Encapsulation.
+| Column Name  | Data Type                | Description           |
+| ------------ | ------------------------ | --------------------- |
+| product_id   | INT (PK, Auto Increment) | Unique product ID     |
+| product_name | VARCHAR(50)              | Name of the product   |
+| category_id  | INT                      | References Categories |
+| price        | NUMERIC                  | Product price         |
+| stock        | INT                      | Available stock       |
+| expiry_date  | DATE                     | Expiry date           |
 
 
-**Database Configuration:**
+** Categories Table**
 
-      create schema Banking_System;
-      use Banking_System;
-      create table Accounts(
-      account_num varchar(10) primary key,
-      name varchar(20),
-      balance double,
-      username varchar(20),
-      password varchar(20),
-      acc_type varchar(20)
-      );
+Stores product categories.
+
+| Column Name   | Data Type   | Description        |
+| ------------- | ----------- | ------------------ |
+| category_id   | INT (PK)    | Unique category ID |
+| category_name | VARCHAR(50) | Category name      |
+
+
+**Sale Tansactions Table**
+
+Tracks sales activity.
+
+| Column Name   | Data Type | Description       |
+| ------------- | --------- | ----------------- |
+| trans_id      | INT (PK)  | Transaction ID    |
+| trans_date    | DATETIME  | Transaction date  |
+| user_id       | INT       | Customer ID       |
+| product_id    | INT       | Purchased product |
+| total_amount  | NUMERIC   | Total value       |
+| quantity_sold | INT       | Quantity sold     |
+
+
+Sample Data
+
+Includes sample entries for:
+
+Categories: Dairy, Furniture, Snacks, Bakery, Electronics
+Products: Milk, Curd, Chair, etc.
+Transactions: Sales data for March–April 2026
+
+**Analytical Queries**
+
+1.Expiring Soon Products
+
+      SELECT * 
+      FROM products
+      WHERE DATEDIFF(expiry_date, CURDATE()) < 7 
+      AND stock > 50;
       
-      create table Transactions(
-      id int auto_increment primary key,
-      account_num varchar(10),
-      action varchar(50),
-      amount double,
-      date datetime,
-      foreign key (account_num) references accounts(account_num));	
+2.Dead Stock Analysis
+
+      SELECT * 
+      FROM products p
+      LEFT JOIN salestransactions s 
+      ON p.product_id = s.product_id
+      AND s.trans_date < DATE_SUB(CURRENT_DATE(), INTERVAL 60 DAY)
+      WHERE s.trans_id IS NULL;
       
+3.Highest Revenue Category (Last Month)
 
-**Architecture Overview:**
-
-
-    DatabaseConnection: Manages the lifecycle of the MySQL connection pool.
-    
-    Bank: Handles high-level operations like account registration and authentication.
-    
-    Accounts: The abstract core containing logic for financial calculations and SQL synchronization.
-    
-    Savings/Current/StudentAccount: Specific implementations of withdrawal logic and limits.
-    
-    Main: The entry point providing an interactive menu-driven interface for the end-user.
-    
-
-**Accounts Table:**
+      SELECT category_name, SUM(total_amount) AS revenue
+      FROM categories c
+      JOIN products p ON c.category_id = p.category_id
+      JOIN salestransactions s ON s.product_id = p.product_id
+      WHERE s.trans_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      GROUP BY category_name
+      ORDER BY revenue DESC
+      LIMIT 1;
 
 
-<img width="386" height="254" alt="Screenshot 2026-04-15 161700" src="https://github.com/user-attachments/assets/4d13eb28-ed4b-45e5-a300-a2fdfcc2dacc" />
+<img width="384" height="266" alt="Screenshot 2026-04-15 161625" src="https://github.com/user-attachments/assets/c40fa501-57e4-41db-9fa2-3e8377b2ead9" />
 
+<img width="363" height="259" alt="Screenshot 2026-04-15 161630" src="https://github.com/user-attachments/assets/ba4308b8-a9d5-4302-b06c-914ff7b082d4" />
 
-**Transactions Table:**
-
-
-<img width="313" height="216" alt="Screenshot 2026-04-15 161705" src="https://github.com/user-attachments/assets/c6b213d1-b7a4-43fc-a672-c965c6da4a55" />
-
-
-**DB output:**
-
-<img width="1919" height="604" alt="Screenshot 2026-04-15 160603" src="https://github.com/user-attachments/assets/5374b66a-b451-404d-8e0f-59daac804136" />
-
-
-
-<img width="1292" height="837" alt="Screenshot 2026-04-15 160617" src="https://github.com/user-attachments/assets/28cce830-aeb9-4eea-a8e6-32a9683c19ec" />
-
-
-Assessment by:
-
-S.Manisha Devi 
-
-Rajalakshmi Institute of Technology
-
-Virtusa - group 1
-
+<img width="373" height="255" alt="Screenshot 2026-04-15 161635" src="https://github.com/user-attachments/assets/74104f01-55a3-4a95-bde0-92eb7a962bb0" />
 
