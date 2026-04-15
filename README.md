@@ -1,88 +1,101 @@
-**Retail Insights Database**
+**Library Management System**
 
-The Retail Insights Database is a SQL-based project designed to manage and analyze retail store operations. It covers inventory tracking, category management, and sales transactions, along with analytical queries to extract meaningful business insights.
+The Library Management System is a Python-based CLI application that allows users to manage books, users, and borrowing operations efficiently.
 
-**Database Schema**
+It supports:
 
-**Products Table**
+Adding books and users
+Borrowing & returning books
+Searching books
+Viewing borrowed books
 
-Stores details about products.
+** Features**
 
-| Column Name  | Data Type                | Description           |
-| ------------ | ------------------------ | --------------------- |
-| product_id   | INT (PK, Auto Increment) | Unique product ID     |
-| product_name | VARCHAR(50)              | Name of the product   |
-| category_id  | INT                      | References Categories |
-| price        | NUMERIC                  | Product price         |
-| stock        | INT                      | Available stock       |
-| expiry_date  | DATE                     | Expiry date           |
+> Add new books
 
+>  Add new users
 
-** Categories Table**
+> Borrow books (with availability check)
 
-Stores product categories.
+> Return books
 
-| Column Name   | Data Type   | Description        |
-| ------------- | ----------- | ------------------ |
-| category_id   | INT (PK)    | Unique category ID |
-| category_name | VARCHAR(50) | Category name      |
+> Search books by title
+
+> Display all books
+
+> View user borrow history
 
 
-**Sale Tansactions Table**
 
-Tracks sales activity.
-
-| Column Name   | Data Type | Description       |
-| ------------- | --------- | ----------------- |
-| trans_id      | INT (PK)  | Transaction ID    |
-| trans_date    | DATETIME  | Transaction date  |
-| user_id       | INT       | Customer ID       |
-| product_id    | INT       | Purchased product |
-| total_amount  | NUMERIC   | Total value       |
-| quantity_sold | INT       | Quantity sold     |
-
-
-Sample Data
-
-Includes sample entries for:
-
-Categories: Dairy, Furniture, Snacks, Bakery, Electronics
-Products: Milk, Curd, Chair, etc.
-Transactions: Sales data for March–April 2026
-
-**Analytical Queries**
-
-1.Expiring Soon Products
-
-      SELECT * 
-      FROM products
-      WHERE DATEDIFF(expiry_date, CURDATE()) < 7 
-      AND stock > 50;
-      
-2.Dead Stock Analysis
-
-      SELECT * 
-      FROM products p
-      LEFT JOIN salestransactions s 
-      ON p.product_id = s.product_id
-      AND s.trans_date < DATE_SUB(CURRENT_DATE(), INTERVAL 60 DAY)
-      WHERE s.trans_id IS NULL;
-      
-3.Highest Revenue Category (Last Month)
-
-      SELECT category_name, SUM(total_amount) AS revenue
-      FROM categories c
-      JOIN products p ON c.category_id = p.category_id
-      JOIN salestransactions s ON s.product_id = p.product_id
-      WHERE s.trans_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
-      GROUP BY category_name
-      ORDER BY revenue DESC
-      LIMIT 1;
+**System Design (ER Diagram)**
++----------------+        +----------------+        +----------------------+
+|     User       |        |     Book       |        |       Library        |
++----------------+        +----------------+        +----------------------+
+| id (PK)        |        | id (PK)        |        | books (list)         |
+| name           |        | title          |        | users (list)         |
+| borrowlist     |<------>| author         |        +----------------------+
++----------------+        | CopiesCount    |
+        |                 +----------------+
+        |
+        | borrows
+        |
+        v
+   (Many-to-Many via borrowlist)
 
 
-<img width="384" height="266" alt="Screenshot 2026-04-15 161625" src="https://github.com/user-attachments/assets/c40fa501-57e4-41db-9fa2-3e8377b2ead9" />
+**Relationships**
 
-<img width="363" height="259" alt="Screenshot 2026-04-15 161630" src="https://github.com/user-attachments/assets/ba4308b8-a9d5-4302-b06c-914ff7b082d4" />
+A User can borrow multiple Books
 
-<img width="373" height="255" alt="Screenshot 2026-04-15 161635" src="https://github.com/user-attachments/assets/74104f01-55a3-4a95-bde0-92eb7a962bb0" />
+A Book can be borrowed by multiple Users
 
+Library manages both Users and Books
+
+
+**Project Structure**
+
+ library-management-system
+ ┣  Library.py
+ ┗  README.md
+
+**Menu Options**
+
+1. Add New Book
+2. Add New User
+3. List All Books
+4. Borrow Book
+5. Return Book
+6. Display Borrowed Books
+7. Search Book
+8. Exit.
+
+
+** Example Workflow**
+
+Add a user
+Add books
+Borrow a book
+Return a book
+Check borrowed list
+
+
+**Future Enhancements**
+
+Authentication system
+Admin/User roles
+Book reservation system
+REST API version
+
+**Output**
+
+<img width="1048" height="465" alt="output1" src="https://github.com/user-attachments/assets/beb7b5b4-57a4-49dd-8df7-79fac852b941" />
+
+
+<img width="1048" height="465" alt="output1" src="https://github.com/user-attachments/assets/c1399b79-66f6-46b9-a9a4-7bc7bd3ac063" />
+
+
+
+Assignment by:
+Manisha Devi S
+Group-1
+Rajalakshmi Insitute of Technology
